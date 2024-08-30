@@ -1,0 +1,31 @@
+{
+    "name": "natorus",
+    "version": "1.0.0",
+    "description": "Learning all tools",
+    "main": "server.js",
+    "scripts": {
+        "start": "nodemon server.js",
+        "start:prod": "NODE_ENV=production node server.js"
+    },
+    "author": "Stav",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "mongoose": "^8.6.0",
+        "morgan": "^1.10.0"
+    },
+    "devDependencies": {
+        "cross-env": "^7.0.3",
+        "eslint": "^8.57.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin": "^1.0.1",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-jsx-a11y": "^6.9.0",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-react": "^7.34.3",
+        "nodemon": "^3.1.4",
+        "prettier": "^3.3.2"
+    }
+}
