@@ -67,21 +67,10 @@ exports.addNewTour = async (req, res) => {
 
 exports.updateTour = async (req, res) => {
     try {
-        const { name, price, rating } = req.body;
-        const tourId = req.params.id;
+        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+        });
 
-        const tour = await Tour.findById(tourId);
-
-        if (name) {
-            tour.name = name;
-        }
-        if (price) {
-            tour.price = price;
-        }
-        if (rating) {
-            tour.rating = rating;
-        }
-        tour.save();
         res.status(201).json({
             status: 'success',
             message: 'tour updated!',
@@ -98,7 +87,19 @@ exports.updateTour = async (req, res) => {
     }
 };
 
-exports.deleteTour = (req, res) => {
-    console.log('deketletd');
-    res.status(204).json({ status: 'success', data: null });
+exports.deleteTour = async (req, res) => {
+    try {
+        await Tour.findByIdAndDelete(req.params.id);
+
+        res.status(201).json({
+            status: 'success',
+            message: 'tour deleted!',
+        });
+    } catch (err) {
+        console.log(`Error${err}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+        });
+    }
 };
