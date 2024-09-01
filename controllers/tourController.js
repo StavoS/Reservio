@@ -11,11 +11,24 @@ exports.checkBody = (req, res, next) => {
 };
 exports.getAllTours = async (req, res) => {
     try {
-        const allTours = await Tour.find({});
+        const queryObj = { ...req.query };
+        const excludedField = ['page', 'sort', 'limit', 'field'];
+        excludedField.forEach((el) => delete queryObj[el]);
+
+        const queryStr = JSON.stringify(queryObj);
+        const modifiedQuery = queryStr.replace(
+            /\b(gt|gte|lt|lte)\b/g,
+            (match) => `$${match}`
+        );
+
+        const query = Tour.find(JSON.parse(modifiedQuery));
+
+        const tours = await query;
+
         res.status(200).json({
             status: 'success',
             data: {
-                tours: allTours,
+                tours,
             },
         });
     } catch (err) {
