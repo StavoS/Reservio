@@ -16,7 +16,6 @@ exports.getAllTours = async (req, res) => {
         excludedField.forEach((el) => delete queryObj[el]);
 
         const queryStr = JSON.stringify(queryObj);
-        console.log(queryObj);
         const modifiedQuery = queryStr.replace(
             /\b(gt|gte|lt|lte)\b/g,
             (match) => `$${match}`
@@ -34,6 +33,11 @@ exports.getAllTours = async (req, res) => {
         if (req.query.fields) {
             const fields = req.query.fields.split(',').join(' ');
             query = query.select(fields);
+        } else {
+            query = query.select('-__v');
+        }
+        if (req.query.limit) {
+            query = query.limit(+req.query.limit);
         }
 
         const tours = await query;
