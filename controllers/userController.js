@@ -10,6 +10,3 @@ exports.getUser = (req, res) => {
 exports.updateUser = (req, res) => {
     res.status(500).json({ status: 'fail', message: 'Route is yet to exist' });
 };
-exports.deleteUser = (req, res) => {
-    res.status(500).json({ status: 'fail', message: 'Route is yet to exist' });
-};

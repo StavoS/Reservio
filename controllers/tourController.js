@@ -9,6 +9,13 @@ exports.checkBody = (req, res, next) => {
     }
     next();
 };
+
+exports.aliasTopToursByPrice = (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'ratingsAverage,summary,difficulty,price,';
+    next();
+};
 exports.getAllTours = async (req, res) => {
     try {
         const queryObj = { ...req.query };
