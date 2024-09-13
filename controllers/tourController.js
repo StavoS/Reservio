@@ -16,6 +16,10 @@ exports.aliasTopToursByPrice = (req, res, next) => {
     req.query.fields = 'ratingsAverage,summary,difficulty,price,';
     next();
 };
+
+class APIFeatures {
+    constructor(query, queryString) {}
+}
 exports.getAllTours = async (req, res) => {
     try {
         const queryObj = { ...req.query };
