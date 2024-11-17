@@ -17,43 +17,105 @@ exports.aliasTopToursByPrice = (req, res, next) => {
     next();
 };
 
-exports.getAllTours = async (req, res) => {
-    try {
-        const queryObj = { ...req.query };
+class APIFeatures {
+    constructor(query, queryString) {
+        this.query = query;
+        this.queryString = queryString;
+    }
+
+    filter() {
+        const queryObj = { ...this.queryString };
         const excludedField = ['page', 'sort', 'limit', 'fields'];
         excludedField.forEach((el) => delete queryObj[el]);
 
-        const queryStr = JSON.stringify(queryObj);
-        const modifiedQuery = queryStr.replace(
+        let queryStr = JSON.stringify(queryObj);
+        queryStr = queryStr.replace(
             /\b(gt|gte|lt|lte)\b/g,
             (match) => `$${match}`
         );
 
-        let query = Tour.find(JSON.parse(modifiedQuery));
+        this.query.find(JSON.parse(queryStr));
 
-        if (req.query.sort) {
-            const sortBy = req.query.sort.split(',').join(' ');
-            query = query.sort(sortBy);
+        return this;
+    }
+
+    sort() {
+        console.log(this.queryString.sort);
+        if (this.queryString.sort) {
+            const sortBy = this.queryString.sort.split(',').join(' ');
+            this.query = this.query.sort(sortBy);
         } else {
-            query = query.sort('-createdAt');
+            this.query = this.query.sort('-createdAt');
         }
-        if (req.query.fields) {
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
+
+        return this;
+    }
+
+    fields() {
+        if (this.queryString.fields) {
+            const fields = this.query.fields.split(',').join(' ');
+            this.query = this.query.select(fields);
         } else {
-            query = query.select('-__v');
+            this.query = this.query.select('-__v');
         }
-        const page = req.query.page * 1 || 1;
-        const limit = +req.query.limit || 100;
+
+        return this;
+    }
+
+    pagination() {
+        const page = this.query.page * 1 || 1;
+        const limit = +this.query.limit || 100;
         const skip = (page - 1) * limit;
-        query.skip(skip).limit(limit);
+        this.query.skip(skip).limit(limit);
 
-        if (req.query.page) {
-            const tourLength = await Tour.countDocuments();
-            if (skip >= tourLength) throw new Error('page does not exist');
-        }
+        return this;
+    }
+}
 
-        const tours = await query;
+exports.getAllTours = async (req, res) => {
+    try {
+        // const queryObj = { ...req.query };
+        // const excludedField = ['page', 'sort', 'limit', 'fields'];
+        // excludedField.forEach((el) => delete queryObj[el]);
+
+        // const queryStr = JSON.stringify(queryObj);
+        // const modifiedQuery = queryStr.replace(
+        //     /\b(gt|gte|lt|lte)\b/g,
+        //     (match) => `$${match}`
+        // );
+
+        // let query = Tour.find(JSON.parse(modifiedQuery));
+
+        // if (req.query.sort) {
+        //     const sortBy = req.query.sort.split(',').join(' ');
+        //     console.log(sortBy);
+        //     query = query.sort(sortBy);
+        // } else {
+        //     query = query.sort('-createdAt');
+        // }
+        // if (req.query.fields) {
+        //     const fields = req.query.fields.split(',').join(' ');
+        //     query = query.select(fields);
+        // } else {
+        //     query = query.select('-__v');
+        // }
+        // const page = req.query.page * 1 || 1;
+        // const limit = +req.query.limit || 100;
+        // const skip = (page - 1) * limit;
+        // query.skip(skip).limit(limit);
+
+        // if (req.query.page) {
+        //     const tourLength = await Tour.countDocuments();
+        //     if (skip >= tourLength) throw new Error('page does not exist');
+        // }
+
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .fields()
+            .pagination();
+
+        const tours = await features.query;
 
         res.status(200).json({
             status: 'success',
