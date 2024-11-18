@@ -84,6 +84,7 @@ exports.updateTour = async (req, res) => {
     try {
         const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
+            runValidators: true,
         });
 
         res.status(201).json({
@@ -97,7 +98,7 @@ exports.updateTour = async (req, res) => {
         console.log(`Error${err}`);
         res.status(500).json({
             status: 'error',
-            message: 'Internal server error',
+            message: err,
         });
     }
 };

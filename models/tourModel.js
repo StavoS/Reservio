@@ -6,6 +6,7 @@ const tourSchema = mongoose.Schema({
         required: [true, 'a tour must have a name'],
         unique: true,
         trim: true,
+        maxLength: [40, 'name cant surpass 40 characters.'],
     },
     rating: {
         type: Number,
@@ -59,6 +60,8 @@ const tourSchema = mongoose.Schema({
 });
 
 const Tour = mongoose.models.Tour || mongoose.model('Tour', tourSchema);
+
+//DOCUMENT MIDDLEWARE: runs before .save() and .create() NOT update
 
 module.exports = {
     Tour,
