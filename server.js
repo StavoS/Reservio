@@ -3,6 +3,11 @@ const dotenv = require('dotenv');
 const app = require('./app');
 dotenv.config({ path: './config.env' });
 
+process.on('uncaughtException', (err) => {
+    console.log(err.name, err.message);
+    process.exit(1);
+});
+
 const port = process.env.PORT || 3000;
 
 const connectDB = async () => {
@@ -16,6 +21,13 @@ const connectDB = async () => {
 
 connectDB();
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Running on port: ${port}...`);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.log(err.name, err.message);
+    server.close(() => {
+        process.exit(1);
+    });
 });

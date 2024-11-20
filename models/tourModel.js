@@ -7,6 +7,7 @@ const tourSchema = mongoose.Schema({
         unique: true,
         trim: true,
         maxLength: [40, 'name cant surpass 40 characters.'],
+        minLength: [6, 'name must be 6 characters and above'],
     },
     rating: {
         type: Number,

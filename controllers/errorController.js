@@ -1,12 +1,26 @@
 const AppError = require('../utils/appError');
 
+function cloneError(err) {
+    const errorClone = Object.create(
+        Object.getPrototypeOf(err), // Keep the same prototype (e.g., Error)
+        Object.getOwnPropertyDescriptors(err) // Copy all properties, including non-enumerable
+    );
+    return errorClone;
+}
+
 const handleCastError = (err) => {
     const message = `Invalid: ${err.path}: ${err.value}`;
 
     return new AppError(message, 400);
 };
 const handleDuplicateError = (err) => {
-    const message = `Invalid: The name: ${err.keyValue.name} already exists`;
+    const message = `Invalid: The value: ${err.keyValue.name} already exists`;
+
+    return new AppError(message, 400);
+};
+const handleValidationError = (err) => {
+    const errors = Object.values(err.errors).map((el) => el.message);
+    const message = `Invalid: ${errors.join('. ')}`;
 
     return new AppError(message, 400);
 };
@@ -43,12 +57,15 @@ module.exports = (err, req, res, next) => {
     if (process.env.NODE_ENV === 'development') {
         sendErrorDevelopment(err, res);
     } else if (process.env.NODE_ENV === 'production') {
-        let error = { ...err };
+        let error = cloneError(err);
         if (errorName === 'CastError') {
             error = handleCastError(error);
-        } else if (err.errorResponse.errmsg.includes('duplicate')) {
+        } else if (err.errorResponse?.errmsg?.includes('duplicate')) {
             error = handleDuplicateError(error);
+        } else if (errorName === 'ValidationError') {
+            error = handleValidationError(error);
         }
+
         sendErrorProduction(error, res);
     }
 };
