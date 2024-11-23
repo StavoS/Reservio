@@ -24,6 +24,8 @@ const handleValidationError = (err) => {
 
     return new AppError(message, 400);
 };
+const handleTokenError = () =>
+    new AppError('Unauthorized, please log in.', 401);
 
 const sendErrorDevelopment = (err, res) => {
     res.status(err.statusCode).json({
@@ -65,8 +67,11 @@ module.exports = (err, req, res, next) => {
             error = handleDuplicateError(error);
         } else if (errorName === 'ValidationError') {
             error = handleValidationError(error);
+        } else if (errorName === 'JsonWebTokenError') {
+            error = handleTokenError();
+        } else if (errorName === 'TokenExpiredError') {
+            error = handleTokenError();
         }
-
         sendErrorProduction(error, res);
     }
 };

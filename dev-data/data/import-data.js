@@ -4,8 +4,6 @@ const dotenv = require('dotenv');
 const { Tour } = require('../../models/tourModel');
 dotenv.config({ path: '../../config.env' });
 
-const port = process.env.PORT || 3000;
-
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.DATABASE_URI);
