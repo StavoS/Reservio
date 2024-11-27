@@ -1,15 +1,17 @@
 const express = require('express');
 const morgan = require('morgan');
-const app = express();
-const AppError = require('./utils/appError');
 const rateLimit = require('express-rate-limit');
-const globalErrorHandler = require('./controllers/errorController');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const globalErrorHandler = require('./controllers/errorController');
+const AppError = require('./utils/appError');
+
+const app = express();
 
 const limiter = rateLimit({
     max: 100,
