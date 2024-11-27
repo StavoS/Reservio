@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const User = require('./userModel');
 
 const tourSchema = mongoose.Schema({
     name: {
@@ -81,7 +82,29 @@ const tourSchema = mongoose.Schema({
             day: Number,
         },
     ],
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+        },
+    ],
 });
+
+tourSchema.pre(/^find/, async function (next) {
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt',
+    });
+    next();
+});
+
+// tourSchema.pre('save', async function (next) {
+//     const guidesPromises = this.guides.map(
+//         async (id) => await User.findById(id)
+//     );
+//     this.guides = await Promise.all(guidesPromises);
+//     next();
+// });
 
 const Tour = mongoose.models.Tour || mongoose.model('Tour', tourSchema);
 
