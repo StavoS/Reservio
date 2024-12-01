@@ -7,7 +7,7 @@ const reviewSchema = mongoose.Schema({
     rating: {
         type: Number,
         min: 1,
-        max: 1,
+        max: 5,
     },
     createdAt: {
         type: Date,
@@ -23,6 +23,18 @@ const reviewSchema = mongoose.Schema({
         ref: 'User',
         required: [true, 'Review must have an author.'],
     },
+});
+
+reviewSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'tour',
+        select: 'name',
+    }).populate({
+        path: 'author',
+        select: 'name photo',
+    });
+
+    next();
 });
 
 const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema);
